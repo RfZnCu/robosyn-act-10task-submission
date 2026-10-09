@@ -1,0 +1,24 @@
+{
+  "models": [
+    {
+      "task": "drawer_open_place",
+      "policy": "act",
+      "huggingface_repo": "RfZnCu/robosyn-act-drawer-open-place",
+      "revision": "5da263ee0c026b5104f59ef977a1f7cfed1ea0d6",
+      "checkpoint_files": ["model.safetensors", "config.json", "train_config.json"],
+      "output_chunk_size": 50,
+      "execution_chunk_size": 8,
+      "gripper_threshold": 0.05
+    },
+    {
+      "task": "handle_basket",
+      "policy": "act",
+      "huggingface_repo": "RfZnCu/robosyn-act-handle-basket",
+      "revision": "a73522f0f1c041f4a7b8395797d3fad3cca85c0b",
+      "checkpoint_files": ["model.safetensors", "config.json", "train_config.json"],
+      "output_chunk_size": 50,
+      "execution_chunk_size": 8,
+      "gripper_threshold": 0.05
+    }
+  ]
+}

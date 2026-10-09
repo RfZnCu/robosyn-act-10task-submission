@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+*.log
+*.mp4
+*.safetensors
+*.ckpt
+*.pt
+*.pth
+token*
+id_rsa*
+id_ed25519*
