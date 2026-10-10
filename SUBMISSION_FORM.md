@@ -1,61 +1,37 @@
-# Official submission form values
+# RoboSynChallenge portal values
 
-Create two separate model-registry entries and two separate evaluation submissions.
+Submit **one evaluation request covering all 10 tasks**. Partial-task requests are invalid.
 
-## Model registry
+## Suggested fields
 
-### Drawer open place
+- Artifact name: `RfZnCu ACT 10-task submission`
+- Experiment name: `robosyn-act-10tasks-20261010`
+- Short description: `Task-specific LeRobot ACT checkpoints for all ten RoboSynChallenge tasks, including failure-driven drawer and basket policies, a selected water-pouring checkpoint, and regression-gated official baselines.`
+- Code repository: URL of this public GitHub repository
+- Checkpoint source: the ten public Hugging Face repositories listed in `model_manifest.json`
+- Training data source: `Official RoboSynChallenge simulated demonstrations plus successful simulated expert trajectories generated in the official task environments.`
+- Ranked: enabled
 
-- Base model name: `ACT drawer_open_place failure-driven stage5`
-- Checkpoint link: `https://huggingface.co/RfZnCu/robosyn-act-drawer-open-place/tree/5da263ee0c026b5104f59ef977a1f7cfed1ea0d6`
-- Code link: use the URL of this GitHub repository after publishing it
+## Interface fields
 
-### Handle basket
-
-- Base model name: `ACT handle_basket targeted 8k`
-- Checkpoint link: `https://huggingface.co/RfZnCu/robosyn-act-handle-basket/tree/a73522f0f1c041f4a7b8395797d3fad3cca85c0b`
-- Code link: use the URL of this GitHub repository after publishing it
-
-## Evaluation protocol (both models)
-
-- Ranked: checked
-- Training data source: official simulated data; disclose additional simulated expert trajectories where the form permits details
 - State inputs: joints and gripper
-- EEF pose input: unchecked
+- EEF pose input: disabled
 - Image inputs: `cam_high`, `cam_left_wrist`, `cam_right_wrist`
-- Output joints: enabled, delta unchecked
-- Output gripper: enabled, delta unchecked
-- Output EEF pose: unchecked
-- `output_chunk_size`: `50`
+- Output joints: enabled; delta disabled
+- Output gripper: enabled; delta disabled
+- Output EEF pose: disabled
+- Output chunk size: `50`
+- Execution chunk size: `8`
 - Gripper threshold: `0.05`
-- `execution_chunk_size`: `8`
 
-## Suggested descriptions
+## Run notes
 
-### Drawer open place
+Use `ACTPolicy.from_pretrained` to load the repository mapped to each task in `model_manifest.json`. Set `checkpoint_path` in `policy/act/deploy_policy.yml` to that local snapshot and run the official RoboSynChallenge evaluator. All checkpoints consume 14D `robot/qpos` plus RGB `cam_high`, `cam_left_wrist`, and `cam_right_wrist`, and emit 14D absolute joint/gripper action chunks. The request covers all ten tasks: drawer_open_place, handle_basket, item_assembly, items_handover, click_bell, table_rearrangement, manipulate_pipette, mixer_operating, sample_loading, and water_pouring.
 
-Short description:
+## Final checks
 
-> LeRobot ACT policy fine-tuned with failure-driven successful expert demonstrations and historical replay. It consumes dual-arm joint/gripper state and three RGB views, and emits absolute joint/gripper action chunks.
-
-Technical notes:
-
-> Load with ACTPolicy.from_pretrained. Input state is robot/qpos (14D). Image keys are cam_high, cam_left_wrist, and cam_right_wrist. Output is a 14D absolute joint/gripper action. Output chunk size is 50 and robot-side execution chunk size is 8.
-
-### Handle basket
-
-Short description:
-
-> LeRobot ACT policy fine-tuned on 300 targeted official simulated demonstrations emphasizing milk-grasp alignment and basket-handle grasp/lift behavior. It consumes dual-arm joint/gripper state and three RGB views.
-
-Technical notes:
-
-> Load with ACTPolicy.from_pretrained. Input state is robot/qpos (14D). Image keys are cam_high, cam_left_wrist, and cam_right_wrist. Output is a 14D absolute joint/gripper action. Output chunk size is 50 and robot-side execution chunk size is 8.
-
-## Final check before submitting
-
-1. Open both pinned Hugging Face links in a logged-out/private browser and confirm they are publicly readable.
-2. Confirm the GitHub repository is public.
-3. Confirm each Hugging Face repository contains `model.safetensors`, `config.json`, and `train_config.json`.
-4. Register both models first, then submit one evaluation request for each task/model.
-5. Do not upload local datasets, videos, SSH keys, passwords, access tokens, or training logs containing secrets.
+1. All ten Hugging Face repositories are public and contain the three required files.
+2. Replace every `main` revision in `model_manifest.json` with the immutable commit hash.
+3. Confirm this GitHub repository is public.
+4. Confirm the portal request contains all ten task mappings before clicking Submit.
+5. Do not publish datasets, videos, SSH credentials, access tokens, or private logs.

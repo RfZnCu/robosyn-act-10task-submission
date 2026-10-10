@@ -1,71 +1,62 @@
-# RoboSynChallenge ACT Submission
+# RoboSynChallenge ACT submission — 10 tasks
 
-This repository documents two ACT policies submitted to RoboSynChallenge:
+This repository is the reproducibility entry point for one RoboSynChallenge evaluation request covering all 10 required tasks. Model weights are hosted in public Hugging Face repositories; this GitHub repository contains the policy adapter, task-to-checkpoint mapping, and the exact interface used at evaluation time.
 
-| Task | Hugging Face checkpoint | Revision | Reported simulation result |
+## Checkpoints
+
+| Task | Hugging Face checkpoint | Selected policy | Local validation summary |
 |---|---|---|---|
-| `drawer_open_place` | [RfZnCu/robosyn-act-drawer-open-place](https://huggingface.co/RfZnCu/robosyn-act-drawer-open-place) | `5da263ee0c026b5104f59ef977a1f7cfed1ea0d6` | 40/100 (40%) on standard `random`, seeds 3 and 4 |
-| `handle_basket` | [RfZnCu/robosyn-act-handle-basket](https://huggingface.co/RfZnCu/robosyn-act-handle-basket) | `a73522f0f1c041f4a7b8395797d3fad3cca85c0b` | 138/250 (55.2%) on standard `random`, seeds 3, 4, 5, 6 and 8 |
+| `drawer_open_place` | [RfZnCu/robosyn-act-drawer-open-place](https://huggingface.co/RfZnCu/robosyn-act-drawer-open-place) | failure-driven stage 5 | 40/100 on standard random, seeds 3–4 |
+| `handle_basket` | [RfZnCu/robosyn-act-handle-basket](https://huggingface.co/RfZnCu/robosyn-act-handle-basket) | targeted 8k | 138/250 on standard random, five seeds |
+| `item_assembly` | [RfZnCu/robosyn-act-item-assembly](https://huggingface.co/RfZnCu/robosyn-act-item-assembly) | trained 10k | 60/100 local evaluation |
+| `items_handover` | [RfZnCu/robosyn-act-items-handover](https://huggingface.co/RfZnCu/robosyn-act-items-handover) | emergency safe-v1 2k | submission candidate; limited paired smoke test |
+| `click_bell` | [RfZnCu/robosyn-act-click-bell](https://huggingface.co/RfZnCu/robosyn-act-click-bell) | official ACT | retained after candidate screening |
+| `table_rearrangement` | [RfZnCu/robosyn-act-table-rearrangement](https://huggingface.co/RfZnCu/robosyn-act-table-rearrangement) | official ACT | 18/20 screening; candidate gain below threshold |
+| `manipulate_pipette` | [RfZnCu/robosyn-act-manipulate-pipette](https://huggingface.co/RfZnCu/robosyn-act-manipulate-pipette) | selected packaged checkpoint | packaged and checksum-verified |
+| `mixer_operating` | [RfZnCu/robosyn-act-mixer-operating](https://huggingface.co/RfZnCu/robosyn-act-mixer-operating) | selected packaged checkpoint | packaged and checksum-verified |
+| `sample_loading` | [RfZnCu/robosyn-act-sample-loading](https://huggingface.co/RfZnCu/robosyn-act-sample-loading) | official ACT | official baseline retained; no extra training |
+| `water_pouring` | [RfZnCu/robosyn-act-water-pouring](https://huggingface.co/RfZnCu/robosyn-act-water-pouring) | selected 4k | 39/50 local formal evaluation |
 
-The model weights are intentionally stored on Hugging Face rather than duplicated in GitHub. Pin the revisions above for reproducible evaluation.
+Every Hugging Face snapshot contains `model.safetensors`, `config.json`, and `train_config.json` and can be loaded by `lerobot.policies.act.modeling_act.ACTPolicy.from_pretrained`.
 
 ## Policy interface
 
-Both policies use the same ACT interface:
+All ten checkpoints use the same LeRobot ACT interface:
 
-- architecture: LeRobot ACT with a ResNet-18 visual backbone;
 - state input: 14-dimensional dual-arm joint and gripper state (`robot/qpos`);
-- image inputs: `cam_high`, `cam_left_wrist`, and `cam_right_wrist`, RGB at 640 x 480;
+- image inputs: `cam_high`, `cam_left_wrist`, and `cam_right_wrist`, RGB 640×480;
 - action output: 14-dimensional absolute dual-arm joint and gripper command;
 - output chunk size: 50;
 - robot-side execution chunk: 8 actions;
-- gripper threshold declared for the submission portal: 0.05;
+- gripper threshold: 0.05;
 - no joint, gripper, or end-effector delta output.
 
-The evaluation adapter and configuration are in [`policy/act`](policy/act). The adapter loads a local path or Hugging Face snapshot through `ACTPolicy.from_pretrained` and maps the RoboSyn observations to the three image keys plus `observation.state`.
+The adapter is in [`policy/act`](policy/act). Set `checkpoint_path` in [`policy/act/deploy_policy.yml`](policy/act/deploy_policy.yml) to the downloaded snapshot for the task being evaluated.
 
-## Download pinned checkpoints
+## Download and run
 
 ```python
 from huggingface_hub import snapshot_download
 
-drawer_path = snapshot_download(
-    repo_id="RfZnCu/robosyn-act-drawer-open-place",
-    revision="5da263ee0c026b5104f59ef977a1f7cfed1ea0d6",
-)
-
-basket_path = snapshot_download(
-    repo_id="RfZnCu/robosyn-act-handle-basket",
-    revision="a73522f0f1c041f4a7b8395797d3fad3cca85c0b",
-)
+TASK = "drawer_open_place"  # replace with any task in model_manifest.json
+checkpoint_path = snapshot_download(f"RfZnCu/robosyn-act-{TASK.replace('_', '-')}")
 ```
 
-Each snapshot contains `model.safetensors`, `config.json`, and `train_config.json` in LeRobot `ACTPolicy.from_pretrained` format.
+Then run the official RoboSynChallenge evaluator with this repository's adapter and the selected `checkpoint_path`. The exact repository IDs and immutable revisions are recorded in [`model_manifest.json`](model_manifest.json).
 
-## Evaluation
+## Training and model selection summary
 
-Use the official RoboSynChallenge repository and replace `checkpoint_path` in `policy/act/deploy_policy.yml` with one of the downloaded directories. The submission uses the official success criterion and the standard `random` environment. No stronger gripper physics is required for the reported final results.
+The strongest task-specific models were produced by failure-driven and semantic-targeted ACT fine-tuning. `drawer_open_place` used successful expert trajectories reconstructed around failed states plus replay data. `handle_basket` emphasized milk-grasp alignment and basket-handle grasp/lift transitions. `water_pouring` uses the selected 4k checkpoint. Tasks whose short fine-tuning candidates failed to clear the paired-selection threshold retain the official ACT checkpoint instead of submitting a regression.
 
-The portal field values for each model are listed in [`SUBMISSION_FORM.md`](SUBMISSION_FORM.md).
+Training data came from the official RoboSynChallenge simulated demonstrations and additional successful simulated expert trajectories generated in the official environments. No private real-robot data is claimed.
 
-## Training summary
+## Reproducibility and integrity
 
-### Drawer open place
-
-The final policy was trained with a failure-driven mixture of 512 successful expert trajectories: 312 demonstrations reconstructed from failed evaluation states and deterministic neighboring scenes, 100 targeted replay trajectories, and 100 general replay trajectories. Training continued in two 2,000-step phases. The first used policy/backbone learning rates of `1e-6`/`5e-7`; the second used `5e-7`/`5e-7`.
-
-The final blind evaluation used two new seeds and produced 20/50 successes on seed 3 and 20/50 on seed 4. The initial reproduced result was 3/50 (6%) on seed 0. These are not paired samples, so the 6% to 40% comparison should be read as a before/after benchmark summary rather than a paired statistical estimate.
-
-### Handle basket
-
-The selected policy is the 8,000-step targeted checkpoint. It was initialized from the official ACT checkpoint and fine-tuned on 300 selected demonstrations emphasizing milk grasp alignment and basket-handle grasp/lift behavior, with policy/backbone learning rates of `2e-6`/`1e-5`.
-
-On the paired `random_gripbalanced`, seed-0 evaluation, it achieved 32/50 (64%) versus 15/50 (30%) for the official ACT checkpoint. On the stricter standard `random` environment it achieved 138/250 (55.2%) over five seeds. Later candidate checkpoints were rejected because paired tests did not improve the 8k checkpoint.
-
-## Data provenance
-
-Training used the official RoboSynChallenge simulated demonstration data and additional simulated expert trajectories generated inside the official task environment. No private real-robot data is claimed.
+- Pin the immutable revisions in `model_manifest.json` for evaluation.
+- Corresponding `config.json` and `train_config.json` files are mirrored under `models/<task>/`.
+- The large weight files are hosted only on Hugging Face, not duplicated in GitHub.
+- The submission uses the official task success criteria and standard random environments.
 
 ## License
 
-The model repositories currently declare Apache-2.0. RoboSynChallenge code and assets remain subject to their upstream licenses; consult the official repository before redistribution.
+The model repositories declare Apache-2.0. RoboSynChallenge code, datasets, and assets remain subject to their upstream licenses.

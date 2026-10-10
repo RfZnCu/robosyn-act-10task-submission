@@ -1,24 +1,27 @@
 {
+  "submission": "robosyn-act-10tasks-20261010",
+  "policy": "act",
+  "interface": {
+    "state_key": "robot/qpos",
+    "state_dim": 14,
+    "image_keys": ["cam_high", "cam_left_wrist", "cam_right_wrist"],
+    "action_dim": 14,
+    "output_chunk_size": 50,
+    "execution_chunk_size": 8,
+    "gripper_threshold": 0.05,
+    "delta_action": false
+  },
   "models": [
-    {
-      "task": "drawer_open_place",
-      "policy": "act",
-      "huggingface_repo": "RfZnCu/robosyn-act-drawer-open-place",
-      "revision": "5da263ee0c026b5104f59ef977a1f7cfed1ea0d6",
-      "checkpoint_files": ["model.safetensors", "config.json", "train_config.json"],
-      "output_chunk_size": 50,
-      "execution_chunk_size": 8,
-      "gripper_threshold": 0.05
-    },
-    {
-      "task": "handle_basket",
-      "policy": "act",
-      "huggingface_repo": "RfZnCu/robosyn-act-handle-basket",
-      "revision": "a73522f0f1c041f4a7b8395797d3fad3cca85c0b",
-      "checkpoint_files": ["model.safetensors", "config.json", "train_config.json"],
-      "output_chunk_size": 50,
-      "execution_chunk_size": 8,
-      "gripper_threshold": 0.05
-    }
-  ]
+    {"task":"drawer_open_place","huggingface_repo":"RfZnCu/robosyn-act-drawer-open-place","revision":"5da263ee0c026b5104f59ef977a1f7cfed1ea0d6"},
+    {"task":"handle_basket","huggingface_repo":"RfZnCu/robosyn-act-handle-basket","revision":"a73522f0f1c041f4a7b8395797d3fad3cca85c0b"},
+    {"task":"item_assembly","huggingface_repo":"RfZnCu/robosyn-act-item-assembly","revision":"main"},
+    {"task":"items_handover","huggingface_repo":"RfZnCu/robosyn-act-items-handover","revision":"main"},
+    {"task":"click_bell","huggingface_repo":"RfZnCu/robosyn-act-click-bell","revision":"main"},
+    {"task":"table_rearrangement","huggingface_repo":"RfZnCu/robosyn-act-table-rearrangement","revision":"main"},
+    {"task":"manipulate_pipette","huggingface_repo":"RfZnCu/robosyn-act-manipulate-pipette","revision":"main"},
+    {"task":"mixer_operating","huggingface_repo":"RfZnCu/robosyn-act-mixer-operating","revision":"main"},
+    {"task":"sample_loading","huggingface_repo":"RfZnCu/robosyn-act-sample-loading","revision":"main"},
+    {"task":"water_pouring","huggingface_repo":"RfZnCu/robosyn-act-water-pouring","revision":"main"}
+  ],
+  "required_files": ["model.safetensors", "config.json", "train_config.json"]
 }
