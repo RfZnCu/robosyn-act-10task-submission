@@ -31,7 +31,7 @@ Use `ACTPolicy.from_pretrained` to load the repository mapped to each task in `m
 ## Final checks
 
 1. All ten Hugging Face repositories are public and contain the three required files.
-2. Replace every `main` revision in `model_manifest.json` with the immutable commit hash.
+2. Confirm every entry in `model_manifest.json` uses an immutable commit hash.
 3. Confirm this GitHub repository is public.
 4. Confirm the portal request contains all ten task mappings before clicking Submit.
 5. Do not publish datasets, videos, SSH credentials, access tokens, or private logs.
