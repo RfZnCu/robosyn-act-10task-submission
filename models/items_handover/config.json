@@ -59,14 +59,14 @@
         }
     },
     "device": "cuda",
-    "use_amp": false,
+    "use_amp": true,
     "push_to_hub": false,
     "repo_id": null,
     "private": null,
     "tags": null,
     "license": null,
     "chunk_size": 50,
-    "n_action_steps": 20,
+    "n_action_steps": 50,
     "vision_backbone": "resnet18",
     "pretrained_backbone_weights": "ResNet18_Weights.IMAGENET1K_V1",
     "replace_final_stride_with_dilation": 0,
@@ -83,7 +83,7 @@
     "temporal_ensemble_coeff": null,
     "dropout": 0.1,
     "kl_weight": 10.0,
-    "optimizer_lr": 2e-06,
+    "optimizer_lr": 1e-05,
     "optimizer_weight_decay": 0.0001,
-    "optimizer_lr_backbone": 2e-07
+    "optimizer_lr_backbone": 1e-05
 }

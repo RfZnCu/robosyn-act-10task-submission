@@ -1,37 +1,31 @@
-# RoboSynChallenge portal values
+# RoboSynChallenge correction response values
 
-Submit **one evaluation request covering all 10 tasks**. Partial-task requests are invalid.
+Use one corrected immutable GitHub commit URL for all ten tasks. Pair it with the
+task-specific immutable Hugging Face URL listed in `TASK_COMMANDS.md`.
 
 ## Suggested fields
 
-- Artifact name: `RfZnCu ACT 10-task submission`
-- Experiment name: `robosyn-act-10tasks-20261010`
-- Short description: `Task-specific LeRobot ACT checkpoints for all ten RoboSynChallenge tasks, including failure-driven drawer and basket policies, a selected water-pouring checkpoint, and regression-gated official baselines.`
-- Code repository: URL of this public GitHub repository
-- Checkpoint source: the ten public Hugging Face repositories listed in `model_manifest.json`
-- Training data source: `Official RoboSynChallenge simulated demonstrations plus successful simulated expert trajectories generated in the official task environments.`
-- Ranked: enabled
-
-## Interface fields
-
-- State inputs: joints and gripper
-- EEF pose input: disabled
+- Artifact name: `RfZnCu ACT_SEU_MAI 10-task submission`
+- Experiment name: `robosyn-act-seu-mai-10tasks-20261012`
+- Code repository: the corrected immutable GitHub tree URL
+- Checkpoint source: the task-specific immutable Hugging Face tree URL
+- Policy: LeRobot ACT
+- State inputs: joints and gripper (`robot/qpos`)
 - Image inputs: `cam_high`, `cam_left_wrist`, `cam_right_wrist`
-- Output joints: enabled; delta disabled
-- Output gripper: enabled; delta disabled
-- Output EEF pose: disabled
+- Output joints and gripper: enabled; delta disabled
 - Output chunk size: `50`
-- Execution chunk size: `8`
-- Gripper threshold: `0.05`
+- Adapter execution step: `10`
 
 ## Run notes
 
-Use `ACTPolicy.from_pretrained` to load the repository mapped to each task in `model_manifest.json`. Set `checkpoint_path` in `policy/act/deploy_policy.yml` to that local snapshot and run the official RoboSynChallenge evaluator. All checkpoints consume 14D `robot/qpos` plus RGB `cam_high`, `cam_left_wrist`, and `cam_right_wrist`, and emit 14D absolute joint/gripper action chunks. The request covers all ten tasks: drawer_open_place, handle_basket, item_assembly, items_handover, click_bell, table_rearrangement, manipulate_pipette, mixer_operating, sample_loading, and water_pouring.
+The repository supplies `policy/eval.sh` and `policy/act/eval.sh`. The launchers
+resolve the selected task to its fixed Hugging Face revision and invoke the
+organizer-provided `scripts/eval_policy.py`. The participant submission does not
+replace or modify the official simulator or task environment.
 
 ## Final checks
 
-1. All ten Hugging Face repositories are public and contain the three required files.
-2. Confirm every entry in `model_manifest.json` uses an immutable commit hash.
-3. Confirm this GitHub repository is public.
-4. Confirm the portal request contains all ten task mappings before clicking Submit.
-5. Do not publish datasets, videos, SSH credentials, access tokens, or private logs.
+1. Use the new full GitHub commit URL, not the moving `main` branch.
+2. Use the matching task-specific Hugging Face revision URL.
+3. Ensure all ten tasks are present in the correction response.
+4. Do not include passwords, access tokens, private logs, or datasets.
